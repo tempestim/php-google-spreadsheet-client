@@ -27,14 +27,14 @@ class DefaultServiceRequest implements ServiceRequestInterface
 {
     /**
      * Request object
-     * 
+     *
      * @var \Google\Spreadsheet\Request
      */
     private $request;
 
     /**
      * Initializes the service request object.
-     * 
+     *
      * @param \Google\Spreadsheet\Request $request
      */
     public function __construct(Request $request)
@@ -63,38 +63,30 @@ class DefaultServiceRequest implements ServiceRequestInterface
      */
     public function execute()
     {
-        $curlParams = array (
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => 0,
-            CURLOPT_FAILONERROR => false,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_VERBOSE => false,
-        );
-
-        $ch = curl_init();
-        curl_setopt_array($ch, $curlParams);
-        curl_setopt($ch, CURLOPT_URL, $this->request->getUrl());
-
-        if ($this->request->getMethod() === 'POST' || $this->request->getMethod() === 'PUT') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->request->getPost());
-        }
-
         $headers = array();
         if (count($this->request->getHeaders()) > 0) {
             foreach ($this->request->getHeaders() as $k => $v) {
                 $headers[] = "$k: $v";
             }
         }
-        $headers[] = "Authorization: OAuth " . $this->request->getAccessToken();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $headers[] = "Authorization: OAuth " . json_decode(
+                $this->request->getAccessToken()
+            )->access_token;
 
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->request->getMethod());
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->request->getUserAgent());
-        $ret = curl_exec($ch);
+        $http = array(
+            "method" => $this->request->getMethod(),
+            "header" => implode("\r\n", $headers)
+        );
 
-        $info = curl_getinfo($ch);
-        if((int)$info['http_code'] > 299) {
-            $exception = new Exception('Error in Google Request: '. $ret, $info['http_code']);
+        if ($this->request->getMethod() === 'POST' || $this->request->getMethod() === 'PUT') {
+            $http['content'] = $this->request->getPost();
+        }
+
+        $context = stream_context_create(array("http" => $http));
+        $ret     = file_get_contents($this->request->getUrl(), false, $context);
+
+        if ($ret === false) {
+            $exception = new Exception('Error in Google Request: ' . $http_response_header);
             $exception->setRequest($this->request);
             $this->resetRequestParams();
             throw $exception;
