@@ -105,8 +105,10 @@ class Spreadsheet
 
     /**
      * Add a new worksheet to this spreadsheet
-     * 
+     *
      * @param string $title
+     * @param int    $rowCount
+     * @param int    $colCount
      *
      * @return \Google\Spreadsheet\Worksheet
      */
@@ -115,7 +117,7 @@ class Spreadsheet
         $entry = '
             <entry xmlns="http://www.w3.org/2005/Atom"
             xmlns:gs="http://schemas.google.com/spreadsheets/2006">
-            <title>'. $title .'</title>
+            <title>'.htmlspecialchars($title, ENT_QUOTES).'</title>
             <gs:rowCount>'. $rowCount .'</gs:rowCount>
             <gs:colCount>'. $colCount .'</gs:colCount>
             </entry>

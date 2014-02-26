@@ -124,9 +124,11 @@ class Worksheet
 
     /**
      * Create the header row for this worksheet
-     * 
-     * @param array $headings
-     * 
+     *
+     * @param integer $row
+     * @param integer $col
+     * @param string $value
+     *
      * @return void
      */
     public function editCell($row, $col, $value)
@@ -134,7 +136,7 @@ class Worksheet
         $entry = '
             <entry xmlns="http://www.w3.org/2005/Atom"
                 xmlns:gs="http://schemas.google.com/spreadsheets/2006">
-              <gs:cell row="'.$row.'" col="'.$col.'" inputValue="'.$value.'"/>
+              <gs:cell row="'.$row.'" col="'.$col.'" inputValue="'.htmlspecialchars($value, ENT_QUOTES).'"/>
             </entry>
         ';
 
@@ -168,7 +170,7 @@ class Worksheet
             $entry = '
                 <entry xmlns="http://www.w3.org/2005/Atom"
                     xmlns:gs="http://schemas.google.com/spreadsheets/2006">
-                  <gs:cell row="'.$row.'" col="'.$col.'" inputValue="'.$heading.'"/>
+                  <gs:cell row="'.$row.'" col="'.$col.'" inputValue="'.htmlspecialchars($heading, ENT_QUOTES).'"/>
                 </entry>
             ';
 

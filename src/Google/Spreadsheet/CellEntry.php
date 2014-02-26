@@ -114,8 +114,10 @@ class CellEntry extends \ArrayIterator
 
     /**
      * Set the contents of the cell
-     * 
+     *
      * @param string $value
+     *
+     * @throws Exception
      */
     public function setContent($value)
     {
@@ -138,7 +140,7 @@ class CellEntry extends \ArrayIterator
         $entry = '
             <entry xmlns="http://www.w3.org/2005/Atom"
                 xmlns:gs="http://schemas.google.com/spreadsheets/2006">
-              <gs:cell row="'.$loc['row'].'" col="'.$loc['col'].'" inputValue="'.$this->cellValue.'"/>
+              <gs:cell row="'.$loc['row'].'" col="'.$loc['col'].'" inputValue="'.htmlspecialchars($this->cellValue, ENT_QUOTES).'"/>
             </entry>
         ';
 
@@ -166,7 +168,8 @@ class CellEntry extends \ArrayIterator
 
     /**
      * Get the location of the cell.
-     * 
+     *
+     * @throws Exception
      * @return array
      */
     private function getCell()

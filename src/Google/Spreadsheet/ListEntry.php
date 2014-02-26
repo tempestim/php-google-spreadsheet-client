@@ -81,7 +81,7 @@ class ListEntry
         $entry = '<entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">';
         $entry .= '<id>'.$this->xml->id->__toString().'</id>';
         foreach($values as $col => $val) {
-            $entry .= '<gsx:'. $col .'>'. $val .'</gsx:'. $col .'>';
+            $entry .= '<gsx:'. $col .'>'.htmlspecialchars($val, ENT_QUOTES).'</gsx:'. $col .'>';
         }
         $entry .= '</entry>';
 
